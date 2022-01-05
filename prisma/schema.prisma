@@ -9,21 +9,150 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
 
+/// Contains fields common for all types of users
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  name     String
-  lastname String
-  profile  Profile?
+  user_id           Int         @id @default(autoincrement())
+  email             String      @unique
+  password_hash     String?
+  display_name      String?
+  external_id       String?     @unique /// unique identifier from external authentication service
+  external_type     String? /// type of external authentication (google, microsoft...)
+  locale            String      @default("sl")
+  avatar_url        String?
+  last_login        DateTime?
+  registration_date DateTime    @default(now())
+  mentor            Mentor?
+  registered_on     DateTime    @default(now())
+  Caregiver         Caregiver[]
+  Patient           Patient[]
 }
 
-model Address {
-  id Int @id @default(autoincrement())
+model UserType {
+  user_type_id Int     @id @default(autoincrement()) @db.SmallInt
+  user_type    String  @unique
+  description  String?
+}
+
+model Mentor {
+  mentor_id     Int         @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  date_of_birth DateTime
+  emso          String      @unique @db.Char(13)
+  phone_number  String      @unique @db.VarChar(15)
+  gender        Gender
+  date_created  DateTime
+  user          User        @relation(fields: [user_id], references: [user_id])
+  user_id       Int         @unique
+  Caregiver     Caregiver[]
+}
+
+model Caregiver {
+  caregiver_id   Int              @id @default(autoincrement())
+  first_name     String
+  last_name      String
+  date_of_birth  DateTime
+  emso           String           @unique @db.Char(13)
+  phone_number   String           @unique @db.VarChar(15)
+  gender         Gender
+  date_created   DateTime
+  user           User             @relation(fields: [user_id], references: [user_id])
+  user_id        Int              @unique
+  location       Location         @relation(fields: [location_id], references: [location_id])
+  location_id    String
+  mentor         Mentor           @relation(fields: [mentor_id], references: [mentor_id])
+  mentor_id      Int
+  Session        Session[]
+  Availibility   Availibility[]
+  CaregiverSkill CaregiverSkill[]
+}
+
+model Patient {
+  patient_id    Int       @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  date_of_birth DateTime
+  emso          String    @unique @db.Char(13)
+  email         String?
+  phone_number  String?   @unique @db.VarChar(15)
+  gender        Gender
+  details       String
+  date_created  DateTime
+  user          User      @relation(fields: [user_id], references: [user_id])
+  user_id       Int       @unique
+  location      Location  @relation(fields: [location_id], references: [location_id])
+  location_id   String
+  Session       Session[]
+  Contact       Contact[]
+}
+
+model Session {
+  session_id   Int       @id @default(autoincrement())
+  start_time   DateTime
+  notes        String
+  patient      Patient   @relation(fields: [patient_id], references: [patient_id])
+  patient_id   Int
+  caregiver    Caregiver @relation(fields: [caregiver_id], references: [caregiver_id])
+  caregiver_id Int
+}
+
+model Location {
+  location_id   String               @id
+  coordinates   Unsupported("point")
+  street        String
+  street_number String
+  city          String
+  country       String
+  Caregiver     Caregiver[]
+  Patient       Patient[]
+}
+
+model Contact {
+  contact_id   Int     @id @default(autoincrement())
+  first_name   String
+  last_name    String
+  email        String?
+  phone_number String? @unique @db.VarChar(15)
+  patient      Patient @relation(fields: [patient_id], references: [patient_id])
+  patient_id   Int
+}
+
+model Term {
+  term_id      Int            @id @default(autoincrement())
+  start_date   DateTime
+  end_date     DateTime
+  Availibility Availibility[]
+}
+
+model Availibility {
+  availibilty_id Int       @id @default(autoincrement())
+  day_of_week    Int
+  start_time     DateTime
+  end_time       DateTime
+  term           Term      @relation(fields: [term_id], references: [term_id])
+  term_id        Int
+  caregiver      Caregiver @relation(fields: [caregiver_id], references: [caregiver_id])
+  caregiver_id   Int
+}
+
+model Skill {
+  skill_id       Int              @id @default(autoincrement()) @db.SmallInt
+  skill_name     String
+  description    String?
+  CaregiverSkill CaregiverSkill[]
+}
+
+model CaregiverSkill {
+  caregiver_id Int
+  skill_id     Int
+  caregiver    Caregiver @relation(fields: [caregiver_id], references: [caregiver_id])
+  skill        Skill     @relation(fields: [skill_id], references: [skill_id])
+
+  @@id([caregiver_id, skill_id])
 }
