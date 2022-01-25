@@ -16,3 +16,4 @@
   - `utils` - runs prettier formatting on all files in src directory
 - `tests`
   - `unit` - dont know yet  
+- `requests` - http requests for development (rest client exetnsion)
