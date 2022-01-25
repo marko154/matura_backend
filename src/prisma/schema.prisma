@@ -1,11 +1,12 @@
 // docs: https://pris.ly/d/prisma-schema
+// run `npx prisma migrate dev --name {migration_name}` to apply changes to the database
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -17,26 +18,27 @@ enum Gender {
 
 /// Contains fields common for all types of users
 model User {
-  user_id           Int         @id @default(autoincrement())
-  email             String      @unique
+  user_id           Int        @id @default(autoincrement())
+  email             String     @unique
   password_hash     String?
   display_name      String?
-  external_id       String?     @unique /// unique identifier from external authentication service
-  external_type     String? /// type of external authentication (google, microsoft...)
-  locale            String      @default("sl")
+  external_id       String?    @unique /// unique identifier from external authentication service
+  external_type     String? /// type of external authentication (google, microsoft, apple...)
+  locale            String     @default("sl")
   avatar_url        String?
   last_login        DateTime?
-  registration_date DateTime    @default(now())
+  registration_date DateTime   @default(now())
   mentor            Mentor?
-  registered_on     DateTime    @default(now())
-  Caregiver         Caregiver[]
-  Patient           Patient[]
+  user_type         UserType   @relation(fields: [user_type_id], references: [user_type_id])
+  user_type_id      Int
+  caregiver         Caregiver?
 }
 
 model UserType {
   user_type_id Int     @id @default(autoincrement()) @db.SmallInt
   user_type    String  @unique
   description  String?
+  User         User[]
 }
 
 model Mentor {
@@ -47,30 +49,31 @@ model Mentor {
   emso          String      @unique @db.Char(13)
   phone_number  String      @unique @db.VarChar(15)
   gender        Gender
-  date_created  DateTime
-  user          User        @relation(fields: [user_id], references: [user_id])
-  user_id       Int         @unique
+  date_created  DateTime    @default(now())
+  user          User?       @relation(fields: [user_id], references: [user_id])
+  user_id       Int?        @unique
   Caregiver     Caregiver[]
 }
 
 model Caregiver {
-  caregiver_id   Int              @id @default(autoincrement())
-  first_name     String
-  last_name      String
-  date_of_birth  DateTime
-  emso           String           @unique @db.Char(13)
-  phone_number   String           @unique @db.VarChar(15)
-  gender         Gender
-  date_created   DateTime
-  user           User             @relation(fields: [user_id], references: [user_id])
-  user_id        Int              @unique
-  location       Location         @relation(fields: [location_id], references: [location_id])
-  location_id    String
-  mentor         Mentor           @relation(fields: [mentor_id], references: [mentor_id])
-  mentor_id      Int
-  Session        Session[]
-  Availibility   Availibility[]
-  CaregiverSkill CaregiverSkill[]
+  caregiver_id    Int              @id @default(autoincrement())
+  first_name      String
+  last_name       String
+  date_of_birth   DateTime
+  emso            String           @unique @db.Char(13)
+  phone_number    String           @unique @db.VarChar(15)
+  gender          Gender
+  additional_info String?
+  date_created    DateTime         @default(now())
+  user            User?            @relation(fields: [user_id], references: [user_id])
+  user_id         Int?             @unique
+  location        Location?        @relation(fields: [location_id], references: [location_id])
+  location_id     String?
+  mentor          Mentor           @relation(fields: [mentor_id], references: [mentor_id])
+  mentor_id       Int
+  Session         Session[]
+  Availibility    Availibility[]
+  CaregiverSkill  CaregiverSkill[]
 }
 
 model Patient {
@@ -83,11 +86,9 @@ model Patient {
   phone_number  String?   @unique @db.VarChar(15)
   gender        Gender
   details       String
-  date_created  DateTime
-  user          User      @relation(fields: [user_id], references: [user_id])
-  user_id       Int       @unique
-  location      Location  @relation(fields: [location_id], references: [location_id])
-  location_id   String
+  date_created  DateTime  @default(now())
+  location      Location? @relation(fields: [location_id], references: [location_id])
+  location_id   String?
   Session       Session[]
   Contact       Contact[]
 }
@@ -103,8 +104,8 @@ model Session {
 }
 
 model Location {
-  location_id   String               @id
-  coordinates   Unsupported("point")
+  location_id   String      @id
+  // coordinates   Unsupported("point") @default(dbgenerated("'<0,0>'::point"))
   street        String
   street_number String
   city          String
