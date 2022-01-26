@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import caregiver from "../services/caregiver.service";
+import * as caregiver from "../services/caregiver.service";
 
 const create: RequestHandler = async (req, res) => {
 	const { email, ...rest } = req.body;

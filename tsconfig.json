@@ -6,11 +6,13 @@
     "outDir": "dist",
     "strict": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
     "target": "ESNext",
     "noFallthroughCasesInSwitch": true,
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "esModuleInterop": true
   }
 }

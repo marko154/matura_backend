@@ -1,5 +1,6 @@
 // docs: https://pris.ly/d/prisma-schema
 // run `npx prisma migrate dev --name {migration_name}` to apply changes to the database
+// npx prisma generate to update types
 
 generator client {
   provider = "prisma-client-js"
@@ -20,6 +21,7 @@ enum Gender {
 model User {
   user_id           Int        @id @default(autoincrement())
   email             String     @unique
+  email_validated   Boolean    @default(false)
   password_hash     String?
   display_name      String?
   external_id       String?    @unique /// unique identifier from external authentication service

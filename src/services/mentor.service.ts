@@ -21,4 +21,4 @@ const create = async (
 	});
 };
 
-export default { create };
+export { create };

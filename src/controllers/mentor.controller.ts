@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import mentor from "../services/mentor.service";
+import * as mentor from "../services/mentor.service";
 
 const create: RequestHandler = async (req, res) => {
 	const { email, ...rest } = req.body;

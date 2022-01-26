@@ -7,8 +7,8 @@ import mentorRoutes from "./mentor.route";
 
 const router = express.Router();
 
-router.use("/mentor/", mentorRoutes);
-router.post("/caregiver/", caregiverRoutes);
-router.post("/user/", userRoutes);
+router.use("/mentor", mentorRoutes);
+router.use("/caregiver", caregiverRoutes);
+router.use("/user", userRoutes);
 
 export default router;

@@ -99,9 +99,7 @@ const generateMentors = (amount: number) => {
 const seed = async () => {
 	// console.log(generateMentors(10));
 	// console.log(generateCaregivers(100, 10));
-	// for (const userType of userTypes) {
-	// 	await prisma.userType.create({ data: userType });
-	// }
+	// await prisma.userType.createMany({ data: userTypes });
 };
 
 seed();
