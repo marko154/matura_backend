@@ -15,7 +15,7 @@ const create = async (
 				create: {
 					...rest,
 					date_of_birth: new Date(rest.date_of_birth),
-				} as Prisma.CaregiverCreateWithoutUserInput,
+				},
 			},
 		},
 	});

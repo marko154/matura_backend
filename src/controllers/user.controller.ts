@@ -1,19 +1,36 @@
 import { RequestHandler } from "express";
 import * as userService from "../services/user.service";
 
+const login: RequestHandler = async (req, res, next) => {
+	try {
+		const data = await userService.login(req.body);
+		res.status(200).json(data);
+	} catch (err: any) {
+		if (err?.status) {
+			res.status(err.status).json(err);
+			return;
+		}
+		next(err);
+	}
+};
+
 const register: RequestHandler = async (req, res, next) => {
 	try {
 		const data = await userService.register(req.body);
 		res.status(200).json(data);
-	} catch (e) {
-		next(e);
+	} catch (err: any) {
+		if (err?.status) {
+			res.status(err.status).json(err);
+			return;
+		}
+		next(err);
 	}
 };
 
 const get: RequestHandler = async (req, res, next) => {
 	try {
-		const userData = await userService.get(req.body.email);
-		res.json(userData);
+		const userData = await userService.get(req.user.email);
+		res.status(200).json(userData);
 	} catch (e) {
 		next(e);
 	}
@@ -22,7 +39,43 @@ const get: RequestHandler = async (req, res, next) => {
 const verify: RequestHandler = async (req, res, next) => {
 	try {
 		userService.verifyToken(req.params.token);
-	} catch {}
+		res.redirect(process.env.SOLID_APP_URL);
+	} catch (err) {
+		return next(err);
+	}
 };
 
-export { register, get, verify };
+const requestPasswordReset: RequestHandler = async (req, res, next) => {
+	try {
+		await userService.requestPasswordReset(req.body.email);
+	} catch (err) {
+		next(err);
+	}
+};
+
+const resetPassword: RequestHandler = async (req, res, next) => {
+	try {
+		await userService.resetPassword(req.body.token, req.body.newPassword);
+	} catch (err) {
+		next(err);
+	}
+};
+
+const setAvatarPhoto: RequestHandler = async (req, res, next) => {
+	try {
+		await userService.setAvatarPhoto(req.user.user_id, req.body.avatar_url);
+		res.status(200).json({ message: "success" });
+	} catch (err) {
+		next(err);
+	}
+};
+
+export {
+	login,
+	register,
+	get,
+	verify,
+	requestPasswordReset,
+	resetPassword,
+	setAvatarPhoto,
+};

@@ -1,0 +1,11 @@
+### create caregiver
+POST http://localhost:3001/api/create-caregiver/ HTTP/1.1
+content-type: application/json
+
+{
+    "email": "marko.gartnar777@gmail.com",
+    "first_name": "",
+    "last_name": "",
+    "additional_info": "Lorem ipsum.",
+    "mentor_id": 1,
+}

@@ -14,7 +14,7 @@ const app = express();
 app.use(cors());
 app.use(compression());
 app.use(express.json());
-if (process.env.NODE_ENV !== "prod") {
+if (process.env.NODE_ENV !== "production") {
 	app.use(morgan("common"));
 }
 

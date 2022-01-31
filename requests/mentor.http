@@ -1,0 +1,13 @@
+### create mentor
+POST http://localhost:3001/api/create-mentor/ HTTP/1.1
+content-type: application/json
+
+{
+    "email": "marko.gartnar712@gmail.com",
+    "first_name": "Marko",
+    "last_name": "Gartnar",
+    "date_of_birth": "2003-07-15",
+    "emso": "1507003500987",
+    "phone_number": "031-800-910",
+    "gender": "MALE"
+}

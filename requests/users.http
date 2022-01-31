@@ -1,36 +1,39 @@
-### create mentor
-POST http://localhost:3000/api/create-mentor/ HTTP/1.1
-content-type: application/json
-
-{
-    "email": "marko.gartnar712@gmail.com",
-    "first_name": "Marko",
-    "last_name": "Gartnar",
-    "date_of_birth": "2003-07-15",
-    "emso": "1507003500987",
-    "phone_number": "031-800-910",
-    "gender": "MALE"
-}
-
-### create caregiver
-POST http://localhost:3000/api/create-caregiver/ HTTP/1.1
+### user login
+POST http://localhost:3001/api/user/login HTTP/1.1
 content-type: application/json
 
 {
     "email": "marko.gartnar777@gmail.com",
-    "first_name": "",
-    "last_name": "",
-    "additional_info": "Lorem ipsum.",
-    "mentor_id": 1,
+    "password": "1234"
 }
 
 ### user signup
-POST http://localhost:3000/api/signup/ HTTP/1.1
+POST http://localhost:3001/api/user/register HTTP/1.1
 content-type: application/json
 
 {
-    "email": "marko.gartnar712@gmail.com",
+    "email": "marko.gartnar777@gmail.com",
     "display_name": "marko154",
     "password": "1234",
     "locale": "en"
+}
+
+### user email verification
+GET http://localhost:3001/api/user/verify/loltoken HTTP/1.1
+
+### user request password reset
+POST http://localhost:3001/api/user/request-password-reset HTTP/1.1
+content-type: application/json
+
+{
+    "email": "marko.gartnar777@gmail.com"
+}
+
+### user password reset
+PATCH http://localhost:3001/api/user/reset-password HTTP/1.1
+content-type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hcmtvLmdhcnRuYXI3NzdAZ21haWwuY29tIiwia2V5IjoiYTE0NzE3OGYyOWZjYzU4NmQyZjkiLCJpYXQiOjE2NDMzOTk3NDMsImV4cCI6MTY0MzQwMTU0M30.xAV-QnQFsx_crEM40pABj9olIQ9JmRGCv-HGIVmiROg",
+    "newPassword": "lol123456"
 }
