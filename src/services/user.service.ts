@@ -55,7 +55,7 @@ const login = async (data: any) => {
 		},
 		process.env.ACCESS_TOKEN_SECRET,
 		{
-			expiresIn: "1h",
+			expiresIn: "3d",
 		}
 	);
 

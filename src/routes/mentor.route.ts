@@ -1,8 +1,9 @@
 import express from "express";
-import { create } from "../controllers/mentor.controller";
+import { create, getAll } from "../controllers/mentor.controller";
 
 const router = express.Router();
 
-router.post("/create/", create);
+router.post("/create", create);
+router.get("/all", getAll);
 
 export default router;
