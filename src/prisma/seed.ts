@@ -55,7 +55,7 @@ const generateCaregivers = (amount: number, numOfMentors: number) => {
 				new Date(1970, 0, 1),
 				new Date(2003, 0, 1)
 			),
-			emso: (1101006500006 + 1).toString(),
+			emso: (1101006500027 + 1).toString(),
 			phone_number: casual.phone,
 			gender: Math.random() > 0.5 ? "MALE" : "FEMALE",
 			additional_info: casual.sentences(3),
@@ -97,7 +97,10 @@ const generateMentors = (amount: number) => {
 };
 
 const seed = async () => {
-	// console.log(generateMentors(10));
+	// generate mentors
+	// for (const mentor of generateMentors(20)) {
+	// 	await prisma.user.create({ data: mentor });
+	// }
 	// console.log(generateCaregivers(100, 10));
 	// await prisma.userType.createMany({ data: userTypes });
 };

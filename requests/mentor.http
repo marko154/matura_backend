@@ -11,3 +11,6 @@ content-type: application/json
     "phone_number": "031-800-910",
     "gender": "MALE"
 }
+
+### delete mentor
+DELETE http://localhost:3001/api/mentor/8 HTTP/1.1

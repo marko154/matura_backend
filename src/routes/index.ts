@@ -4,11 +4,13 @@ import express from "express";
 import userRoutes from "./user.route";
 import caregiverRoutes from "./caregiver.route";
 import mentorRoutes from "./mentor.route";
+import patientRoutes from "./patient.route";
 
 const router = express.Router();
 
+router.use("/user", userRoutes);
 router.use("/mentor", mentorRoutes);
 router.use("/caregiver", caregiverRoutes);
-router.use("/user", userRoutes);
+router.use("/patient", patientRoutes);
 
 export default router;

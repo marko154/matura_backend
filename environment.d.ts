@@ -12,6 +12,12 @@ declare global {
 			MAPBOX_API_KEY: string;
 		}
 	}
+
+	interface Location {
+		location_id: string;
+		coordinates: [number, number];
+		place_name: string;
+	}
 }
 
 // If this file has no import/export statements (i.e. is a script)

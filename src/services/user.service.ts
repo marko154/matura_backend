@@ -8,7 +8,6 @@ import {
 } from "../utils/email.utils";
 
 const get = async (email: string) => {
-	console.log(email);
 	return await prisma.user.findUnique({
 		where: {
 			email,

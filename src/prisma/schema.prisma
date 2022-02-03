@@ -49,10 +49,10 @@ model Mentor {
   last_name     String
   date_of_birth DateTime
   emso          String      @unique @db.Char(13)
-  phone_number  String      @unique @db.VarChar(15)
+  phone_number  String      @unique @db.VarChar(20)
   gender        Gender
   date_created  DateTime    @default(now())
-  user          User?       @relation(fields: [user_id], references: [user_id])
+  user          User?       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id       Int?        @unique
   Caregiver     Caregiver[]
 }
@@ -63,16 +63,16 @@ model Caregiver {
   last_name       String
   date_of_birth   DateTime
   emso            String           @unique @db.Char(13)
-  phone_number    String           @unique @db.VarChar(15)
+  phone_number    String           @unique @db.VarChar(20)
   gender          Gender
   additional_info String?
   date_created    DateTime         @default(now())
-  user            User?            @relation(fields: [user_id], references: [user_id])
+  user            User?            @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   user_id         Int?             @unique
   location        Location?        @relation(fields: [location_id], references: [location_id])
   location_id     String?
-  mentor          Mentor           @relation(fields: [mentor_id], references: [mentor_id])
-  mentor_id       Int
+  mentor          Mentor?          @relation(fields: [mentor_id], references: [mentor_id], onDelete: SetNull)
+  mentor_id       Int?
   Session         Session[]
   Availibility    Availibility[]
   CaregiverSkill  CaregiverSkill[]
@@ -85,9 +85,9 @@ model Patient {
   date_of_birth DateTime
   emso          String    @unique @db.Char(13)
   email         String?
-  phone_number  String?   @unique @db.VarChar(15)
+  phone_number  String?   @unique @db.VarChar(20)
   gender        Gender
-  details       String
+  details       String?
   date_created  DateTime  @default(now())
   location      Location? @relation(fields: [location_id], references: [location_id])
   location_id   String?
@@ -98,7 +98,7 @@ model Patient {
 model Session {
   session_id   Int       @id @default(autoincrement())
   start_time   DateTime
-  notes        String
+  notes        String?
   patient      Patient   @relation(fields: [patient_id], references: [patient_id])
   patient_id   Int
   caregiver    Caregiver @relation(fields: [caregiver_id], references: [caregiver_id])
@@ -106,14 +106,15 @@ model Session {
 }
 
 model Location {
-  location_id   String      @id
-  // coordinates   Unsupported("point") @default(dbgenerated("'<0,0>'::point"))
-  street        String
-  street_number String
-  city          String
-  country       String
-  Caregiver     Caregiver[]
-  Patient       Patient[]
+  location_id String               @id
+  coordinates Unsupported("point")
+  place_name  String
+  // street        String
+  // street_number String
+  // city          String
+  // country       String
+  Caregiver   Caregiver[]
+  Patient     Patient[]
 }
 
 model Contact {
@@ -121,7 +122,7 @@ model Contact {
   first_name   String
   last_name    String
   email        String?
-  phone_number String? @unique @db.VarChar(15)
+  phone_number String? @unique @db.VarChar(20)
   patient      Patient @relation(fields: [patient_id], references: [patient_id])
   patient_id   Int
 }
