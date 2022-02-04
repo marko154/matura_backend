@@ -97,7 +97,7 @@ model Patient {
 
 model Session {
   session_id   Int       @id @default(autoincrement())
-  start_time   DateTime
+  start_time   DateTime  @default(now())
   notes        String?
   patient      Patient   @relation(fields: [patient_id], references: [patient_id])
   patient_id   Int

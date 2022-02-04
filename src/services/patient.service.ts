@@ -1,4 +1,5 @@
 import { Prisma } from ".prisma/client";
+import { Contact, Session } from "@prisma/client";
 import { prisma } from "../prisma/database";
 import { createLocation } from "./common.service";
 
@@ -42,8 +43,14 @@ const deletePatient = async (patientID: string) => {
 	// should also delete location if necessary
 };
 
-const addContact = async (contact: Prisma.ContactCreateInput) => {
+const addContact = async (contact: Contact) => {
 	await prisma.contact.create({ data: contact });
 };
 
-export { create, getAll, get, deletePatient, addContact };
+const assignCaregiver = async (data: Session) => {
+	return await prisma.session.create({
+		data,
+	});
+};
+
+export { create, getAll, get, deletePatient, addContact, assignCaregiver };

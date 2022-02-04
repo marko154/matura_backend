@@ -52,4 +52,13 @@ const addContact: RequestHandler = async (req, res, next) => {
 	}
 };
 
-export { create, getAll, get, deletePatient, addContact };
+const assignCaregiver: RequestHandler = async (req, res, next) => {
+	try {
+		const session = patient.assignCaregiver(req.body);
+		res.status(200).json(session);
+	} catch (err) {
+		next(err);
+	}
+};
+
+export { create, getAll, get, deletePatient, addContact, assignCaregiver };
