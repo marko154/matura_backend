@@ -14,6 +14,15 @@ const login: RequestHandler = async (req, res, next) => {
 	}
 };
 
+const googleLogin: RequestHandler = async (req, res, next) => {
+	try {
+		const data = await userService.googleLogin(req.body.id_token);
+		res.status(200).json(data);
+	} catch (err) {
+		next(err);
+	}
+};
+
 const register: RequestHandler = async (req, res, next) => {
 	try {
 		const data = await userService.register(req.body);
@@ -72,6 +81,7 @@ const setAvatarPhoto: RequestHandler = async (req, res, next) => {
 
 export {
 	login,
+	googleLogin,
 	register,
 	get,
 	verify,

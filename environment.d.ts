@@ -10,6 +10,7 @@ declare global {
 			EMAIL_SERVICE: string;
 			SOLID_APP_URL: string;
 			MAPBOX_API_KEY: string;
+			GOOGLE_CLIENT_ID: string;
 		}
 	}
 

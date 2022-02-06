@@ -6,6 +6,7 @@ import {
 	sendVerificationEmail,
 	sendPasswordResetEmail,
 } from "../utils/email.utils";
+import { createToken, verifyGoogleIdToken } from "../utils/authentication";
 
 const get = async (email: string) => {
 	return await prisma.user.findUnique({
@@ -47,17 +48,46 @@ const login = async (data: any) => {
 		throw { status: 403, message: "Invalid credentials." };
 	}
 
-	const token = jwt.sign(
-		{
-			user_id: user.user_id,
-			email,
-		},
-		process.env.ACCESS_TOKEN_SECRET,
-		{
-			expiresIn: "3d",
-		}
-	);
+	const token = createToken(user);
+	return { token };
+};
 
+const googleLogin = async (idToken: string) => {
+	console.log(idToken);
+	// handle error here
+	const payload = await verifyGoogleIdToken(idToken);
+
+	const user = await prisma.user.findUnique({
+		where: { email: payload?.email },
+		select: {
+			password_hash: true,
+			user_id: true,
+			email: true,
+			external_id: true,
+		},
+	});
+
+	// case when the admin hasn't created an account with that email
+	if (!user) {
+		throw { status: 401, message: "E-mail address does not exist." };
+	}
+
+	// case when user is registering for the first time
+	if (user.external_id !== payload?.sub) {
+		await prisma.user.update({
+			where: { email: user.email },
+			data: {
+				external_id: payload?.sub,
+				external_type: "GOOGLE",
+				display_name: payload?.name,
+				avatar_url: payload?.picture,
+				locale: payload?.locale,
+				email_validated: payload?.email_verified,
+			},
+		});
+	}
+
+	const token = createToken(user);
 	return { token };
 };
 
@@ -176,6 +206,7 @@ const setAvatarPhoto = async (user_id: number, imageURL: string) => {
 
 export {
 	login,
+	googleLogin,
 	register,
 	get,
 	verifyToken,

@@ -1,5 +1,8 @@
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const auth: RequestHandler = (req, res, next) => {
 	const { authorization } = req.headers;
@@ -24,4 +27,25 @@ const auth: RequestHandler = (req, res, next) => {
 	}
 };
 
-export { auth };
+const createToken = (user: { user_id: number; email: string }) => {
+	return jwt.sign(
+		{
+			user_id: user.user_id,
+			email: user.email,
+		},
+		process.env.ACCESS_TOKEN_SECRET,
+		{
+			expiresIn: "3d",
+		}
+	);
+};
+
+const verifyGoogleIdToken = async (idToken: string) => {
+	const ticket = await client.verifyIdToken({
+		idToken,
+		audience: process.env.GOOGLE_CLIENT_ID,
+	});
+	return ticket.getPayload();
+};
+
+export { auth, verifyGoogleIdToken, createToken };
