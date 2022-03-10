@@ -3,7 +3,8 @@
 // npx prisma generate to update types
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -130,7 +131,7 @@ model Contact {
 model Term {
   term_id      Int            @id @default(autoincrement())
   start_date   DateTime
-  end_date     DateTime
+  end_date     DateTime?
   Availibility Availibility[]
 }
 
@@ -141,7 +142,7 @@ model Availibility {
   end_time       DateTime
   term           Term      @relation(fields: [term_id], references: [term_id])
   term_id        Int
-  caregiver      Caregiver @relation(fields: [caregiver_id], references: [caregiver_id])
+  caregiver      Caregiver @relation(fields: [caregiver_id], references: [caregiver_id], onDelete: Cascade)
   caregiver_id   Int
 }
 

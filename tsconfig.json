@@ -13,7 +13,7 @@
     "lib": [
       "esnext"
     ],
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "ts-node": {
     "files": true

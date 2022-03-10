@@ -1,13 +1,15 @@
 import express from "express";
 import {
-	login,
-	googleLogin,
-	get,
-	register,
-	requestPasswordReset,
-	verify,
-	resetPassword,
-	setAvatarPhoto,
+  login,
+  googleLogin,
+  get,
+  register,
+  requestPasswordReset,
+  verify,
+  resetPassword,
+  setAvatarPhoto,
+  checkEmailAvailable,
+  getRecentUsers,
 } from "../controllers/user.controller";
 import { auth } from "../utils/authentication";
 
@@ -15,6 +17,8 @@ const router = express.Router();
 
 router.get("/", auth, get);
 router.get("/verify/:token", verify);
+router.get("/email-available/:email", checkEmailAvailable);
+router.get("/recent-users", auth, getRecentUsers);
 
 router.post("/login", login);
 router.post("/google-login", googleLogin);

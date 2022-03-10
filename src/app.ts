@@ -15,7 +15,7 @@ app.use(cors());
 app.use(compression());
 app.use(express.json());
 if (process.env.NODE_ENV !== "production") {
-	app.use(morgan("common"));
+  app.use(morgan("common"));
 }
 
 const port = process.env.PORT || 3001;
@@ -23,18 +23,18 @@ const port = process.env.PORT || 3001;
 app.use("/api", routes);
 
 app.use((req, res, next) => {
-	next(createError(404));
+  next(createError(404));
 });
 
 app.use(((err, req, res, next) => {
-	console.log(err);
-	res.status(err.status || 500).json({
-		status: false,
-		message: err.message,
-	});
+  console.log(err);
+  res.status(err.status || 500).json({
+    status: false,
+    message: err.message,
+  });
 }) as ErrorRequestHandler);
 
 app.listen(port, () => {
-	// tslint:disable-next-line no-console
-	return console.log(`Express is listening at http://localhost:${port}`);
+  // tslint:disable-next-line no-console
+  return console.log(`Express is listening at http://localhost:${port}`);
 });
