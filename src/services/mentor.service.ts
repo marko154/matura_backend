@@ -1,12 +1,14 @@
 import { Prisma } from ".prisma/client";
 import { prisma } from "../prisma/database";
 import { exclude } from "../utils/database.utils";
+import { sendRegistrationInviteEmail } from "../utils/email.utils";
+import jwt from "jsonwebtoken";
 
 const create = async (
   userFields: Prisma.UserCreateWithoutUser_typeInput,
   mentorFields: Omit<Prisma.MentorCreateWithoutUserInput, "Caregiver">
 ) => {
-  return await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       ...userFields,
       user_type: {
@@ -19,8 +21,27 @@ const create = async (
         },
       },
     },
-    select: { mentor: { select: { mentor_id: true } } },
+    select: {
+      mentor: {
+        select: {
+          mentor_id: true,
+          user: {
+            select: {
+              user_id: true,
+              email: true,
+              email_validated: true,
+              user_type_id: true,
+            },
+          },
+        },
+      },
+    },
   });
+  const token = jwt.sign(user.mentor!.user!, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "1h",
+  });
+  sendRegistrationInviteEmail(userFields.email, token);
+  return user;
 };
 
 const getAll = async ({ limit, page, search }: any) => {

@@ -2,8 +2,13 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { prisma } from "../prisma/database";
-import { sendVerificationEmail, sendPasswordResetEmail } from "../utils/email.utils";
+import {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+  sendRegistrationInviteEmail,
+} from "../utils/email.utils";
 import { createToken, verifyGoogleIdToken } from "../utils/authentication";
+import { TokenPayload } from "google-auth-library";
 
 const get = async (email: string) => {
   return await prisma.user.findUnique({
@@ -51,8 +56,12 @@ const login = async (data: any) => {
 };
 
 const googleLogin = async (idToken: string) => {
-  // handle error here
-  const payload = await verifyGoogleIdToken(idToken);
+  let payload: TokenPayload | undefined;
+  try {
+    payload = await verifyGoogleIdToken(idToken);
+  } catch (err) {
+    throw { status: 401, message: "Invalid ID token." };
+  }
 
   const user = await prisma.user.findUnique({
     where: { email: payload?.email },
@@ -112,7 +121,8 @@ const register = async (data: any) => {
     const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: "1h",
     });
-    sendVerificationEmail(user, token);
+    // by this point it should be validated, but just in case
+    if (!user.email_validated) sendVerificationEmail(user, token);
   }
   // fix sending too much info with user
   return {
@@ -128,13 +138,14 @@ const register = async (data: any) => {
 
 const verifyToken = async (token: string) => {
   const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET) as jwt.JwtPayload;
-
-  await prisma.user.update({
+  const { password_hash } = await prisma.user.update({
     data: {
       email_validated: true,
     },
     where: { user_id: decoded.user_id },
+    select: { password_hash: true },
   });
+  return { user: decoded, isVerifyingByEmail: !!password_hash };
 };
 
 const requestPasswordReset = async (email: string) => {
@@ -208,6 +219,21 @@ const getRecentUsers = async () => {
   });
 };
 
+const adminCreateUser = async (fields: {
+  email: string;
+  user_type_id: number;
+  display_name: string | null;
+}) => {
+  const user = await prisma.user.create({
+    data: fields,
+    select: { user_id: true, email: true, email_validated: true, user_type_id: true },
+  });
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "1h",
+  });
+  await sendRegistrationInviteEmail(fields.email, token);
+};
+
 export {
   login,
   googleLogin,
@@ -219,4 +245,5 @@ export {
   setAvatarPhoto,
   checkEmailAvalilable,
   getRecentUsers,
+  adminCreateUser,
 };

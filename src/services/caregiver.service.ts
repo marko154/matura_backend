@@ -1,4 +1,5 @@
 import { Prisma } from ".prisma/client";
+import { PrismaPromise } from "@prisma/client";
 import { prisma } from "../prisma/database";
 import { exclude } from "../utils/database.utils";
 import {
@@ -7,6 +8,8 @@ import {
   createLocation,
 } from "./common.service";
 import { Caregiver } from "@prisma/client";
+import { sendRegistrationInviteEmail } from "../utils/email.utils";
+import jwt from "jsonwebtoken";
 
 const create = async (
   userFields: Prisma.UserCreateWithoutUser_typeInput,
@@ -30,7 +33,21 @@ const create = async (
           },
         },
       },
-      select: { caregiver: { select: { caregiver_id: true } } },
+      select: {
+        caregiver: {
+          select: {
+            caregiver_id: true,
+            user: {
+              select: {
+                user_id: true,
+                email: true,
+                email_validated: true,
+                user_type_id: true,
+              },
+            },
+          },
+        },
+      },
     });
     if (!caregiver) {
       throw { message: "Error when creating caregiver" };
@@ -38,6 +55,10 @@ const create = async (
     await Promise.all(
       createAvailibilities(caregiver.caregiver_id, availibilities, prisma as any)
     );
+    const token = jwt.sign(caregiver.user!, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: "1h",
+    });
+    sendRegistrationInviteEmail(caregiver.user?.email!, token);
     return { message: "Sucess", caregiver_id: caregiver.caregiver_id };
   });
 };
@@ -73,7 +94,7 @@ const get = async (caregiverId: string) => {
       include: { user: true, mentor: true, location: true },
     }),
     prisma.$queryRaw`
-    SELECT coordinates[0] as long, coordinates[1] as lat FROM "Location" 
+    SELECT ST_X(coordinates) as long, ST_Y(coordinates) as lat FROM "Location" 
       INNER JOIN "Caregiver" USING (location_id)
       WHERE caregiver_id = ${Number(caregiverId)};
       `,
@@ -95,23 +116,39 @@ const getSessions = async (caregiverId: string) => {
 };
 
 const getAvailibilities = async (caregiverId: string) => {
-  return await prisma.availibility.findMany({
-    where: { caregiver_id: Number(caregiverId) },
-    include: { term: true },
+  return await prisma.term.findMany({
+    include: { Availibility: { where: { caregiver_id: Number(caregiverId) } } },
+    where: { Availibility: { some: { caregiver_id: Number(caregiverId) } } },
   });
 };
 
-const update = async (fields: {
-  caregiver_id: number;
-  first_name: string;
-  last_name: string;
-  date_of_birth: string;
-  phone_number: string;
-}) => {
-  return await prisma.caregiver.update({
-    where: { caregiver_id: fields.caregiver_id },
-    data: exclude(fields, "caregiver_id"),
-  });
+const update = async (
+  caregiver_id: string,
+  fields: {
+    caregiver_id?: number;
+    first_name?: string;
+    last_name?: string;
+    date_of_birth?: string;
+    phone_number?: string;
+    location?: any;
+    location_id?: string;
+  }
+) => {
+  const { location } = fields;
+  delete fields.location;
+  const transactions: PrismaPromise<any>[] = [];
+  // delete the previous location if necessary
+  if (location) {
+    transactions.push(createLocation(location));
+    fields.location_id = location.location_id;
+  }
+  transactions.push(
+    prisma.caregiver.update({
+      where: { caregiver_id: Number(caregiver_id) },
+      data: exclude(fields, "caregiver_id"),
+    })
+  );
+  return prisma.$transaction(transactions);
 };
 
 const deleteCaregiver = async (userId: string) => {

@@ -8,13 +8,13 @@ const createLocation = (location: Location, _prisma: PrismaClient = prisma) => {
 			(location_id, coordinates, place_name)
 			VALUES (
 				${location.location_id},
-				point(${lat}, ${long}),
+				ST_SetSRID(ST_MakePoint(${lat}, ${long}), 4326),
 				${location.place_name}
 			)
 	`;
 };
 
-// deletes a location if it doesn't have any children
+// deletes a location if it no one is connected to it
 const deleteLocationIfNoChild = (location: Location) => {
   return prisma.$executeRaw`
 		DELETE FROM "Location"

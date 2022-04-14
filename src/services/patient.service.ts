@@ -40,7 +40,7 @@ const get = async (patientID: string) => {
       include: { location: true },
     }),
     prisma.$queryRaw`
-    SELECT coordinates[0] as long, coordinates[1] as lat FROM "Location" 
+    SELECT ST_X(coordinates) as long, ST_Y(coordinates) as lat FROM "Location" 
       INNER JOIN "Patient" USING (location_id)
       WHERE patient_id = ${Number(patientID)};
       `,
@@ -56,7 +56,7 @@ const get = async (patientID: string) => {
 
 const getClosestCaregivers = async (location_id: string) => {
   return await prisma.$queryRaw`
-    SELECT "Caregiver".*, place_name, coordinates[0] as long, coordinates[1] as lat,
+    SELECT "Caregiver".*, place_name, ST_X(coordinates) as long, ST_Y(coordinates) as lat,
       (SELECT coordinates FROM "Location" WHERE location_id = ${location_id}) <-> "Location".coordinates as distance 
       FROM "Caregiver" INNER JOIN "Location" USING (location_id)
       ORDER BY distance
@@ -110,7 +110,14 @@ const checkEmsoAvailable = async (emso: string) => {
 };
 
 // maybe move this later
-const getAllSessions = async ({ limit, page, search }: any) => {
+const getAllSessions = async ({ limit, page, search, from, to }: any) => {
+  const additionalParams: any = {};
+  if (from || to) {
+    additionalParams.start_time = {};
+    if (from) additionalParams.start_time.gte = new Date(from);
+    if (to) additionalParams.start_time.lte = new Date(to);
+  }
+  console.log(additionalParams, from, to);
   const [total, sessions] = await prisma.$transaction([
     prisma.session.count({
       where: {
@@ -120,6 +127,7 @@ const getAllSessions = async ({ limit, page, search }: any) => {
           { caregiver: { first_name: { contains: search, mode: "insensitive" } } },
           { caregiver: { last_name: { contains: search, mode: "insensitive" } } },
         ],
+        ...additionalParams,
       },
     }),
     prisma.session.findMany({
@@ -133,6 +141,7 @@ const getAllSessions = async ({ limit, page, search }: any) => {
           { caregiver: { first_name: { contains: search, mode: "insensitive" } } },
           { caregiver: { last_name: { contains: search, mode: "insensitive" } } },
         ],
+        ...additionalParams,
       },
     }),
   ]);
@@ -145,6 +154,24 @@ const createSession = async (data: {
   caregiver_id: number;
 }) => {
   return await prisma.session.create({ data });
+};
+
+const getLocations = async () => {
+  return await prisma.$queryRaw`
+  SELECT "Patient".patient_id, ST_X(coordinates) AS long, ST_Y(coordinates) AS lat FROM "Patient"
+      INNER JOIN "Location" USING (location_id)
+  `;
+};
+
+// maybe move this to it's own file
+const getAllLocations = async () => {
+  return await prisma.$queryRaw`
+    SELECT "Patient".patient_id, NULL as caregiver_id, ST_X(coordinates) AS long, ST_Y(coordinates) AS lat FROM "Patient"
+      INNER JOIN "Location" USING (location_id)
+    UNION ALL
+    SELECT NULL as patient_id, "Caregiver".caregiver_id, ST_X(coordinates) AS long, ST_Y(coordinates) AS lat FROM "Caregiver"
+      INNER JOIN "Location" USING (location_id)
+  `;
 };
 
 export {
@@ -161,4 +188,6 @@ export {
   getSessions,
   getAllSessions,
   createSession,
+  getAllLocations,
+  getLocations,
 };

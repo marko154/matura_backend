@@ -47,8 +47,9 @@ const get: RequestHandler = async (req, res, next) => {
 
 const verify: RequestHandler = async (req, res, next) => {
   try {
-    userService.verifyToken(req.params.token);
-    res.redirect(process.env.SOLID_APP_URL);
+    const { user, isVerifyingByEmail } = await userService.verifyToken(req.params.token);
+    if (isVerifyingByEmail) res.redirect(process.env.SOLID_APP_URL);
+    else res.json(user);
   } catch (err) {
     return next(err);
   }
@@ -82,7 +83,7 @@ const checkEmailAvailable: RequestHandler = async (req, res, next) => {
 const setAvatarPhoto: RequestHandler = async (req, res, next) => {
   try {
     await userService.setAvatarPhoto(req.user.user_id, req.body.avatar_url);
-    res.status(200).json({ message: "success" });
+    res.status(200).json({ message: "Success" });
   } catch (err) {
     next(err);
   }
@@ -92,6 +93,15 @@ const getRecentUsers: RequestHandler = async (req, res, next) => {
   try {
     const users = await userService.getRecentUsers();
     res.status(200).json(users);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const adminCreateUser: RequestHandler = async (req, res, next) => {
+  try {
+    await userService.adminCreateUser(req.body);
+    res.status(200).json({ message: "Success" });
   } catch (err) {
     next(err);
   }
@@ -108,4 +118,5 @@ export {
   checkEmailAvailable,
   setAvatarPhoto,
   getRecentUsers,
+  adminCreateUser,
 };

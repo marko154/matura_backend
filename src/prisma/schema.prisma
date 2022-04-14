@@ -2,6 +2,11 @@
 // run `npx prisma migrate dev --name {migration_name}` to apply changes to the database
 // npx prisma generate to update types
 
+// before initialization
+// CREATE EXTENSION postgis;
+// after initialization
+// CREATE INDEX idx_gist_location ON "Location" USING gist(coordinates);
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
@@ -108,6 +113,7 @@ model Session {
 
 model Location {
   location_id String               @id
+  // coordinates Unsupported("geometry(Point,4326)") change this when doing a full migration from render
   coordinates Unsupported("point")
   place_name  String
   // street        String

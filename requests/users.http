@@ -12,8 +12,8 @@ POST http://localhost:3001/api/user/register HTTP/1.1
 content-type: application/json
 
 {
-    "email": "marko.gartnar777@gmail.com",
-    "display_name": "marko154",
+    "email": "marko.gartnar777+limited@gmail.com",
+    "display_name": "Limited User",
     "password": "1234",
     "locale": "en"
 }

@@ -13,7 +13,11 @@ import {
   getEmergencyContacts,
   getAllSessions,
   createSession,
+  getAllLocations,
+  getLocations,
 } from "../controllers/patient.controller";
+
+// dont mess with the order because it changes the was express resolves urls
 
 const router = express.Router();
 
@@ -22,6 +26,8 @@ router.post("/create-session", createSession);
 router.post("/:id/add-contacts", addContacts);
 router.post("/assign-caregiver", assignCaregiver);
 
+router.get("/locations", getLocations);
+router.get("/all-locations", getAllLocations);
 router.get("/all", getAll);
 router.get("/:id/sessions", getSessions);
 router.get("/all-sessions", getAllSessions);

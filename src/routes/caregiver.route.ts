@@ -22,7 +22,7 @@ router.get("/:id/availibility", getAvailibility);
 router.get("/:id", get);
 router.get("/emso-available/:emso", checkEmsoAvailable);
 
-router.patch("/", update);
+router.patch("/:id", update);
 
 router.delete("/:id", deleteCaregiver);
 

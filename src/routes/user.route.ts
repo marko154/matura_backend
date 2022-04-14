@@ -10,6 +10,7 @@ import {
   setAvatarPhoto,
   checkEmailAvailable,
   getRecentUsers,
+  adminCreateUser,
 } from "../controllers/user.controller";
 import { auth } from "../utils/authentication";
 
@@ -24,6 +25,7 @@ router.post("/login", login);
 router.post("/google-login", googleLogin);
 router.post("/register", register);
 router.post("/request-password-reset", requestPasswordReset);
+router.post("/create-user", adminCreateUser);
 
 router.patch("/reset-password/", resetPassword);
 router.patch("/avatar-photo/", setAvatarPhoto);

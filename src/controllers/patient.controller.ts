@@ -123,6 +123,24 @@ const createSession: RequestHandler = async (req, res, next) => {
   }
 };
 
+const getAllLocations: RequestHandler = async (req, res, next) => {
+  try {
+    const locations = await patient.getAllLocations();
+    res.status(200).json(locations);
+  } catch (e) {
+    next(e);
+  }
+};
+
+const getLocations: RequestHandler = async (req, res, next) => {
+  try {
+    const locations = await patient.getLocations();
+    res.status(200).json(locations);
+  } catch (e) {
+    next(e);
+  }
+};
+
 export {
   create,
   getAll,
@@ -137,4 +155,6 @@ export {
   getSessions,
   getAllSessions,
   createSession,
+  getAllLocations,
+  getLocations,
 };
