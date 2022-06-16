@@ -5,6 +5,7 @@ import compression from "compression";
 import morgan from "morgan";
 import routes from "./routes";
 import dotenv from "dotenv";
+import { openapidocs } from "./swagger";
 
 dotenv.config({ path: __dirname + "/../.env" });
 
@@ -22,10 +23,6 @@ const port = process.env.PORT || 3001;
 
 app.use("/api", routes);
 
-app.use((req, res, next) => {
-  next(createError(404));
-});
-
 app.use(((err, req, res, next) => {
   console.log(err);
   res.status(err.status || 500).json({
@@ -34,7 +31,14 @@ app.use(((err, req, res, next) => {
   });
 }) as ErrorRequestHandler);
 
+openapidocs(app);
+
+app.use((req, res, next) => {
+  next(createError(404));
+});
+
 app.listen(port, () => {
   // tslint:disable-next-line no-console
-  return console.log(`Express is listening at http://localhost:${port}`);
+  console.log(`Express is listening at http://localhost:${port}`);
+  console.log(`Docs are available on http://localhost:${port}/api/v1/docs`);
 });

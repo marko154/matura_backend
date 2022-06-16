@@ -9,7 +9,7 @@ import patientRoutes from "./patient.route";
 const router = express.Router();
 
 router.use("/user", userRoutes);
-router.use("/mentor", mentorRoutes);
+router.use("/mentors", mentorRoutes);
 router.use("/caregiver", caregiverRoutes);
 router.use("/patient", patientRoutes);
 

@@ -1,0 +1,37 @@
+components:
+  schemas:
+    NewMentor:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        date_of_birth:
+          type: string
+          example: 2022-05-20T18:54:17.830Z
+        emso:
+          type: string
+          example: 0101006500006
+        phone_number:
+          type: string
+          example: 031-891-123
+        gender:
+          type: string
+          example: M
+    Mentor:
+      allOf:
+        - type: object
+          properties:
+            mentor_id:
+              type: integer
+              example: 0
+            user_id:
+              type: integer
+              example: 0
+            date_created:
+              type: string
+              example: 2022-05-20T18:54:17.830Z
+        - $ref: "#/components/schemas/NewMentor"
