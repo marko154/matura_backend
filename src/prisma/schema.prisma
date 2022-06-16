@@ -112,9 +112,8 @@ model Session {
 }
 
 model Location {
-  location_id String               @id
-  // coordinates Unsupported("geometry(Point,4326)") change this when doing a full migration from render
-  coordinates Unsupported("point")
+  location_id String                              @id
+  coordinates Unsupported("geometry(Point,4326)") // change this when doing a full migration from render
   place_name  String
   // street        String
   // street_number String
