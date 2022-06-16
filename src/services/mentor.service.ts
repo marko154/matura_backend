@@ -105,15 +105,24 @@ const getAssignableCaregivers = async (query: {
 }) => {
   return await prisma.caregiver.findMany({
     where: {
-      mentor_id: query.type === "all" ? { not: Number(query.id) } : null,
-      OR: [
+      AND: [
+        // { mentor_id: query.type === "all" ?
+        // { not: Number(query.id) }
+        // : null },
+        query.type === "all"
+          ? { OR: [{ mentor_id: { not: Number(query.id) } }, { mentor_id: null }] }
+          : { mentor_id: null },
         {
-          user: {
-            email: { contains: query.search, mode: "insensitive" },
-          },
+          OR: [
+            {
+              user: {
+                email: { contains: query.search, mode: "insensitive" },
+              },
+            },
+            { first_name: { contains: query.search, mode: "insensitive" } },
+            { last_name: { contains: query.search, mode: "insensitive" } },
+          ],
         },
-        { first_name: { contains: query.search, mode: "insensitive" } },
-        { last_name: { contains: query.search, mode: "insensitive" } },
       ],
     },
     include: { user: true },

@@ -155,8 +155,27 @@ const deleteCaregiver = async (userId: string) => {
   return await prisma.user.delete({ where: { user_id: Number(userId) } });
 };
 
-const createAvailibility = async (data: any) => {
-  await prisma.term.create({ data });
+const createAvailibility = async (id: number, availibilities: any) => {
+  console.log(availibilities);
+  return await Promise.all(createAvailibilities(id, availibilities, prisma as any));
+};
+
+const createTermAvailibility = async (data: {
+  caregiver_id: number;
+  term_id: number;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+}) => {
+  return await prisma.availibility.create({ data });
+};
+
+const deleteAvailibility = async (availibilty_id: number) => {
+  return await prisma.availibility.delete({
+    where: {
+      availibilty_id,
+    },
+  });
 };
 
 const checkEmsoAvailable = async (emso: string) => {
@@ -171,6 +190,8 @@ export {
   update,
   deleteCaregiver,
   createAvailibility,
+  createTermAvailibility,
   checkEmsoAvailable,
   getAvailibilities,
+  deleteAvailibility,
 };

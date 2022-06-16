@@ -35,3 +35,39 @@ components:
               type: string
               example: 2022-05-20T18:54:17.830Z
         - $ref: "#/components/schemas/NewMentor"
+
+    Caregiver:
+      type: object
+      properties:
+        caregiver_id:
+          type: integer
+          required: true
+        first_name:
+          type: string
+          required: true
+        last_name:
+          type: string
+          required: true
+        date_of_birth:
+          type: string
+          example: "2022-05-20T18:54:17.830Z"
+        emso:
+          type: string
+          example: "0101006500006"
+        phone_number:
+          type: string
+          example: 031-891-123
+        gender:
+          type: string
+          example: M
+        additional_info:
+          type: string
+        date_created:
+          type: string
+          example: 2022-05-20T18:54:17.830Z
+        user_id:
+          type: integer
+        location_id:
+          type: string
+        mentor_id:
+          type: integer

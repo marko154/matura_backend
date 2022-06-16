@@ -48,4 +48,12 @@ const verifyGoogleIdToken = async (idToken: string) => {
   return ticket.getPayload();
 };
 
-export { auth, verifyGoogleIdToken, createToken };
+const isAdmin: RequestHandler = (req, res, next) => {
+  if (req?.user?.user_id === 1) {
+    next();
+  } else {
+    res.status(401).json({ message: "Unauthorised" });
+  }
+};
+
+export { auth, verifyGoogleIdToken, createToken, isAdmin };

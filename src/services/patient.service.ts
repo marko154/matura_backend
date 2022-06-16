@@ -55,13 +55,33 @@ const get = async (patientID: string) => {
 };
 
 const getClosestCaregivers = async (location_id: string) => {
-  return await prisma.$queryRaw`
-    SELECT "Caregiver".*, place_name, ST_X(coordinates) as long, ST_Y(coordinates) as lat,
-      (SELECT coordinates FROM "Location" WHERE location_id = ${location_id}) <-> "Location".coordinates as distance 
+  return await prisma.$transaction(async (prisma) => {
+    const caregivers: any[] = await prisma.$queryRaw`
+    SELECT 
+    "Caregiver".*, 
+    place_name, 
+      ST_X(coordinates) as long, 
+      ST_Y(coordinates) as lat,
+      (SELECT coordinates FROM "Location" WHERE location_id = ${location_id}) <-> "Location".coordinates as distance
       FROM "Caregiver" INNER JOIN "Location" USING (location_id)
       ORDER BY distance
       LIMIT 10
-  `;
+      `;
+    const availibilities = await Promise.all(
+      caregivers.map(({ caregiver_id }) =>
+        prisma.availibility.findMany({
+          where: {
+            caregiver_id,
+          },
+          include: { term: true },
+        })
+      )
+    );
+    for (let i = 0; i < caregivers.length; i++) {
+      caregivers[i].availibilities = availibilities[i];
+    }
+    return caregivers;
+  });
 };
 
 const getSessions = async (patient_id: string) => {

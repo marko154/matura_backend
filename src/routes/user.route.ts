@@ -25,9 +25,9 @@ router.post("/login", login);
 router.post("/google-login", googleLogin);
 router.post("/register", register);
 router.post("/request-password-reset", requestPasswordReset);
-router.post("/create-user", adminCreateUser);
+router.post("/create-user", auth, adminCreateUser);
 
 router.patch("/reset-password/", resetPassword);
-router.patch("/avatar-photo/", setAvatarPhoto);
+router.patch("/avatar-photo/", auth, setAvatarPhoto);
 
 export default router;

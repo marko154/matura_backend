@@ -1,0 +1,235 @@
+/mentors:
+  post:
+    tags:
+      - Mentor
+    summary: create a new mentor
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NewMentor"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+                user:
+                  type: object
+  get:
+    tags:
+      - Mentor
+    summary: get mentors
+    parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: search
+        schema:
+          type: string
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+                data:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                    mentors:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/NewMentor"
+/mentors/:id:
+  get:
+    tags:
+      - Mentor
+    summary: get a mentor by id
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+                data:
+                  $ref: "#/components/schemas/Mentor"
+  patch:
+    tags:
+      - Mentor
+    summary: modify a mentor
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NewMentor"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+  delete:
+    tags:
+      - Mentor
+    summary: delete a mentor
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+/mentors/:id/caregivers:
+  get:
+    tags:
+      - Mentor
+    summary: get mentor's caregivers
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+                data:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Caregiver"
+/mentors/assignable-caregivers:
+  get:
+    tags:
+      - Mentor
+    summary: get unassigned caregivers
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+                data:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Caregiver"
+/mentors/:id/assign-caregivers:
+  post:
+    tags:
+      - Mentor
+    summary: assign caregivers to a mentor
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Caregiver"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+/mentors/unassign-caregivers:
+  post:
+    tags:
+      - Mentor
+    summary: unassign caregivers from a mentor
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Caregiver"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK

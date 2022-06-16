@@ -1,0 +1,40 @@
+/caregivers:
+  get:
+    tags:
+      - Caregiver
+    summary: get caregivers
+    parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: search
+        schema:
+          type: string
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: OK
+                data:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                    mentors:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Caregiver"

@@ -6,10 +6,10 @@ const create: RequestHandler = async (req, res, next) => {
   const { email, ...rest } = req.body;
   try {
     const user = await mentor.create({ email }, rest);
-    res.status(200).json({ status: 200, message: "Success", user });
+    res.status(200).json({ status: "Success", user });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-      res.status(500).json({ message: "Unique constraint failed." });
+      res.status(500).json({ status: "Unique constraint failed." });
     } else next(e);
   }
 };
@@ -27,7 +27,7 @@ const get: RequestHandler = async (req, res, next) => {
   try {
     console.log(req.params);
     const mentorData = await mentor.get(req.params.id);
-    res.status(200).json(mentorData);
+    res.status(200).json({ status: "Success", data: mentorData });
   } catch (e) {
     next(e);
   }
@@ -36,7 +36,7 @@ const get: RequestHandler = async (req, res, next) => {
 const getCaregivers: RequestHandler = async (req, res, next) => {
   try {
     const caregivers = await mentor.getCaregivers(req.params.id);
-    res.status(200).json(caregivers);
+    res.status(200).json({ status: "Success", data: caregivers });
   } catch (err) {
     next(err);
   }
@@ -54,7 +54,7 @@ const getAssignableCaregivers: RequestHandler = async (req, res, next) => {
 const assignCaregivers: RequestHandler = async (req, res, next) => {
   try {
     await mentor.assignCaregivers(req.params.id, req.body);
-    res.status(200).json({ message: "Success" });
+    res.status(200).json({ status: "Success" });
   } catch (err) {
     next(err);
   }
@@ -63,7 +63,7 @@ const assignCaregivers: RequestHandler = async (req, res, next) => {
 const unassignCaregivers: RequestHandler = async (req, res, next) => {
   try {
     await mentor.unassignCaregivers(req.params.id, req.body);
-    res.status(200).json({ message: "Success" });
+    res.status(200).json({ status: "Success" });
   } catch (err) {
     next(err);
   }
@@ -72,7 +72,7 @@ const unassignCaregivers: RequestHandler = async (req, res, next) => {
 const deleteMentor: RequestHandler = async (req, res, next) => {
   try {
     await mentor.deleteMentor(req.params.id);
-    res.status(200).json({ message: "Successfully deleted" });
+    res.status(200).json({ status: "Successfully deleted" });
   } catch (e) {
     next(e);
   }
@@ -81,7 +81,7 @@ const deleteMentor: RequestHandler = async (req, res, next) => {
 const update: RequestHandler = async (req, res, next) => {
   try {
     await mentor.update(req.body);
-    res.status(200).json({ message: "Successfully updated" });
+    res.status(200).json({ status: "Successfully updated" });
   } catch (err) {
     next(err);
   }

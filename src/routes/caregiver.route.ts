@@ -9,12 +9,21 @@ import {
   getSessions,
   checkEmsoAvailable,
   getAvailibility,
-} from "../controllers/caregiver.controller";
+  createTermAvailibility,
+  deleteAvailibility,
+} from "../controllers/caregiver/caregiver.controller";
+import * as validate from "../controllers/caregiver/caregiver.validator";
 
 const router = express.Router();
 
 router.post("/create/", create);
-router.post("/create-availibility/", createAvailibility);
+router.post("/:id/availibility/", createAvailibility);
+// add availibility for a term
+router.post(
+  "/:id/term-availibility/",
+  validate.createTermAvailibility,
+  createTermAvailibility
+);
 
 router.get("/all", getAll);
 router.get("/:id/sessions", getSessions);
@@ -24,6 +33,11 @@ router.get("/emso-available/:emso", checkEmsoAvailable);
 
 router.patch("/:id", update);
 
+router.delete(
+  "/availibility/:availibility_id",
+  validate.deleteAvailibility,
+  deleteAvailibility
+);
 router.delete("/:id", deleteCaregiver);
 
 export default router;

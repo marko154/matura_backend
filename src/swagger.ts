@@ -20,7 +20,7 @@ const options: swaggerJSDoc.Options = {
       termsOfService: "http://example.com/terms/",
     },
   },
-  apis: ["**/*.ts", "src/prisma/swagger.types.yaml"], // files containing annotations as above
+  apis: ["**/*.yaml", "src/prisma/swagger.types.yaml"], // files containing annotations as above
 };
 
 const openapiSpecification = swaggerJSDoc(options);
