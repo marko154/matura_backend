@@ -85,25 +85,27 @@ model Caregiver {
 }
 
 model Patient {
-  patient_id    Int       @id @default(autoincrement())
+  patient_id    Int           @id @default(autoincrement())
   first_name    String
   last_name     String
   date_of_birth DateTime
-  emso          String    @unique @db.Char(13)
+  emso          String        @unique @db.Char(13)
   email         String?
-  phone_number  String?   @unique @db.VarChar(20)
+  phone_number  String?       @unique @db.VarChar(20)
   gender        Gender
   details       String?
-  date_created  DateTime  @default(now())
-  location      Location? @relation(fields: [location_id], references: [location_id])
+  date_created  DateTime      @default(now())
+  location      Location?     @relation(fields: [location_id], references: [location_id])
   location_id   String?
   Session       Session[]
   Contact       Contact[]
+  Requirement   Requirement[]
 }
 
 model Session {
   session_id   Int       @id @default(autoincrement())
   start_time   DateTime  @default(now())
+  duration     DateTime?
   notes        String?
   patient      Patient   @relation(fields: [patient_id], references: [patient_id])
   patient_id   Int
@@ -156,6 +158,7 @@ model Skill {
   skill_name     String
   description    String?
   CaregiverSkill CaregiverSkill[]
+  Requirement    Requirement[]
 }
 
 model CaregiverSkill {
@@ -165,4 +168,15 @@ model CaregiverSkill {
   skill        Skill     @relation(fields: [skill_id], references: [skill_id])
 
   @@id([caregiver_id, skill_id])
+}
+
+// Requirement
+
+model Requirement {
+  patient_id Int
+  skill_id   Int
+  patient    Patient @relation(fields: [patient_id], references: [patient_id])
+  skill      Skill   @relation(fields: [skill_id], references: [skill_id])
+
+  @@id([patient_id, skill_id])
 }

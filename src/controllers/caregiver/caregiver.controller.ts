@@ -102,6 +102,24 @@ const checkEmsoAvailable: RequestHandler = async (req, res, next) => {
   }
 };
 
+const createSkill: RequestHandler = async (req, res, next) => {
+  try {
+    const count = await caregiver.createSkill(req.body);
+    res.status(200).json({ message: "Succcess" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const assignSkills: RequestHandler = async (req, res, next) => {
+  try {
+    const count = await caregiver.assignSkills(Number(req.params.id), req.body);
+    res.status(200).json({ message: "Succcess" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export {
   create,
   getAll,
@@ -114,4 +132,6 @@ export {
   getAvailibility,
   createTermAvailibility,
   deleteAvailibility,
+  createSkill,
+  assignSkills,
 };

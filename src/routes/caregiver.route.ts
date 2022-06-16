@@ -11,6 +11,8 @@ import {
   getAvailibility,
   createTermAvailibility,
   deleteAvailibility,
+  createSkill,
+  assignSkills,
 } from "../controllers/caregiver/caregiver.controller";
 import * as validate from "../controllers/caregiver/caregiver.validator";
 
@@ -24,6 +26,10 @@ router.post(
   validate.createTermAvailibility,
   createTermAvailibility
 );
+
+// move this somewhere
+router.post("/skill", createSkill);
+router.post("/:id/skills", assignSkills);
 
 router.get("/all", getAll);
 router.get("/:id/sessions", getSessions);

@@ -54,7 +54,7 @@ const get = async (patientID: string) => {
   };
 };
 
-const getClosestCaregivers = async (location_id: string) => {
+const getClosestCaregivers = async (location_id: string, offset: number = 0) => {
   return await prisma.$transaction(async (prisma) => {
     const caregivers: any[] = await prisma.$queryRaw`
     SELECT 
@@ -66,6 +66,7 @@ const getClosestCaregivers = async (location_id: string) => {
       FROM "Caregiver" INNER JOIN "Location" USING (location_id)
       ORDER BY distance
       LIMIT 10
+      OFFSET ${offset}
       `;
     const availibilities = await Promise.all(
       caregivers.map(({ caregiver_id }) =>

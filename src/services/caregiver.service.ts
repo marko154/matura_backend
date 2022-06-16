@@ -182,6 +182,18 @@ const checkEmsoAvailable = async (emso: string) => {
   return await prisma.caregiver.count({ where: { emso } });
 };
 
+const createSkill = async (data: { skill_name: string; description?: string }) => {
+  return await prisma.skill.create({ data });
+};
+
+const assignSkills = async (caregiver_id: number, skillIDs: number[]) => {
+  return await prisma.$transaction(
+    skillIDs.map((skill_id) =>
+      prisma.caregiverSkill.create({ data: { caregiver_id, skill_id } })
+    )
+  );
+};
+
 export {
   create,
   getAll,
@@ -194,4 +206,6 @@ export {
   checkEmsoAvailable,
   getAvailibilities,
   deleteAvailibility,
+  createSkill,
+  assignSkills,
 };
