@@ -63,9 +63,21 @@ const create = async (
   });
 };
 
-const getAll = async ({ limit, page }: any) => {
+const getAll = async ({ limit, page, search }: any) => {
   const [total, caregivers] = await prisma.$transaction([
-    prisma.caregiver.count(),
+    prisma.caregiver.count({
+      where: {
+        OR: [
+          { first_name: { contains: search, mode: "insensitive" } },
+          { last_name: { contains: search, mode: "insensitive" } },
+          {
+            user: {
+              email: { contains: search, mode: "insensitive" },
+            },
+          },
+        ],
+      },
+    }),
     prisma.caregiver.findMany({
       include: {
         user: {
@@ -82,6 +94,17 @@ const getAll = async ({ limit, page }: any) => {
       },
       take: +limit,
       skip: (page - 1) * limit,
+      where: {
+        OR: [
+          { first_name: { contains: search, mode: "insensitive" } },
+          { last_name: { contains: search, mode: "insensitive" } },
+          {
+            user: {
+              email: { contains: search, mode: "insensitive" },
+            },
+          },
+        ],
+      },
     }),
   ]);
   return { total, caregivers };

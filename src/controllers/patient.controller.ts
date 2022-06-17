@@ -37,7 +37,7 @@ const getClosestCaregivers: RequestHandler = async (req, res, next) => {
   try {
     const caregivers = await patient.getClosestCaregivers(
       req.params.location_id,
-      req.query.offset
+      Number(req.query.offset)
     );
     res.status(200).json(caregivers);
   } catch (e) {

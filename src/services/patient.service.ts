@@ -173,8 +173,11 @@ const createSession = async (data: {
   notes: string;
   patient_id: number;
   caregiver_id: number;
+  duration: string;
 }) => {
-  return await prisma.session.create({ data });
+  return await prisma.session.create({
+    data: { ...data, duration: new Date(`1.1.1970 ${data.duration}`) },
+  });
 };
 
 const getLocations = async () => {
