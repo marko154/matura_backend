@@ -27,7 +27,7 @@ router.post("/register", register);
 router.post("/request-password-reset", requestPasswordReset);
 router.post("/create-user", auth, adminCreateUser);
 
-router.patch("/reset-password/", resetPassword);
-router.patch("/avatar-photo/", auth, setAvatarPhoto);
+router.patch("/reset-password", resetPassword);
+router.patch("/avatar-photo", auth, setAvatarPhoto);
 
 export default router;

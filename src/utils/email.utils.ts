@@ -62,7 +62,7 @@ async function sendVerificationEmail(
 async function sendPasswordResetEmail(email: string, token: string) {
   const { text, html } = generateHtml("password_reset", {
     name: "Test User",
-    redirectURL: `${process.env.SOLID_APP_URL}/reset-password/${token}`,
+    redirectURL: `${process.env.SOLID_APP_URL}/reset-password/?token=${token}`,
     supportURL: `${process.env.SOLID_APP_URL}/support`,
   });
   await sendEmail({
